@@ -33,7 +33,7 @@ function App() {
 
   const onClickInvite = (id) => {
     if (invites.includes(id)) {
-      setInvites((prev) => prev.filter((_id) => _id != id));
+      setInvites((prev) => prev.filter((_id) => _id !== id));
     } else {
       setInvites((prev) => [...prev, id])
     }
