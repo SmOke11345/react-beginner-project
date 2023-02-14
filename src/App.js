@@ -1,12 +1,47 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Block } from './Block';
 import './index.scss';
 
 function App() {
+  const [fromCurrency, setFromCurrency] = useState('RUB');
+  const [toCurrency, setToCurrency] = useState('USD');
+  const [fromPrice, setFromPrice] = useState(0);
+  const [toPrice, setToPrice] = useState(0);
+
+  const [rates, setRates] = useState({});
+
+  useEffect(() => {
+    fetch('https://cbn.cur.su/api/latest.js')
+      .then((res) => res.json())
+      .then((json) => {
+        setRates(json.rates);
+      })
+      .catch((err) => {
+        console.warn(err);
+        alert('Не удалость получить информацию');
+      });
+  }, []);
+
+  const onChangeFromPrice = (value) => {
+    const price = value / rates[fromCurrency];
+    const result = price * rates[toCurrency];
+    setToPrice(result);
+    setFromPrice(value);
+  };
+
+  const onChangeToPrice = (value) => {
+    setToPrice(value);
+  };
+
   return (
     <div className="App">
-      <Block value={0} currency="RUB" onChangeCurrency={(cur) => console.log(cur)} />
-      <Block value={0} currency="USD" />
+      <Block
+        value={fromPrice}
+        currency={fromCurrency}
+        onChangeValue={onChangeFromPrice}
+        onChangeCurrency={setFromCurrency}
+      />
+      <Block value={toPrice} currency={toCurrency} onChangeValue={onChangeToPrice} onChangeCurrency={setToCurrency} />
     </div>
   );
 }
